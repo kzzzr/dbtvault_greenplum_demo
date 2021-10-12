@@ -2,7 +2,7 @@
 source_model: 'raw_transactions'
 derived_columns:
   RECORD_SOURCE: '!RAW_TRANSACTIONS'
-  LOAD_DATE: DATEADD(DAY, 1, TRANSACTION_DATE)
+  LOAD_DATE: (TRANSACTION_DATE + 1 * INTERVAL '1 day')
   EFFECTIVE_FROM: 'TRANSACTION_DATE'
 hashed_columns:
   TRANSACTION_PK:

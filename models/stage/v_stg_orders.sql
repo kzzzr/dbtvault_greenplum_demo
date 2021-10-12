@@ -106,5 +106,5 @@ WITH staging AS (
 )
 
 SELECT *,
-       TO_DATE('{{ var('load_date') }}') AS LOAD_DATE
+       ('{{ var('load_date') }}')::DATE AS LOAD_DATE
 FROM staging

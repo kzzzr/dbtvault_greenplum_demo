@@ -1,5 +1,5 @@
-name: dbtvault_snowflake_demo
-profile: dbtvault_snowflake_demo
+name: dbtvault_greenplum_demo
+profile: dbtvault_greenplum_demo
 version: '5.1.0'
 require-dbt-version: ['>=0.18.0', '<0.20.0']
 config-version: 2
@@ -23,7 +23,7 @@ vars:
   tpch_size: 10 #1, 10, 100, 1000, 10000
 
 models:
-  dbtvault_snowflake_demo:
+  dbtvault_greenplum_demo:
     raw_stage:
       tags:
         - 'raw'
@@ -49,3 +49,9 @@ models:
       t_links:
         tags:
           - 't_link'
+
+# path to compiled .sql files
+target-path: "target"
+clean-targets:
+    - "target"
+    - "dbt_modules"

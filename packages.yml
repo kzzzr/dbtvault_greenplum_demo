@@ -1,3 +1,6 @@
 packages:
-  - package: Datavault-UK/dbtvault
-    version: 0.7.3
+  # - package: Datavault-UK/dbtvault
+  #   version: 0.7.3
+  - git: "https://github.com/kzzzr/dbtvault.git"
+    revision: master
+    warn-unpinned: false

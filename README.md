@@ -210,13 +210,31 @@ dbtvault_greenplum_demo:
 
 **4. Make sure you run on `dbt==0.19.0`**
 
-You may use repo's Pipfile with pipenv or install dbt yourself
+Either use `pipenv` for Virtual Environment or Docker container
+
+### Python virtual enironment
+
+Sync dependencies of specific versions and open subshell:
 
 ```bash
-pipenv install
+pipenv sync
 pipenv shell
 
-dbt debug # check if OK
+dbt --version
+dbt debug
+```
+
+### Docker
+
+1. Launch containers with dbt and postgres
+2. Enter dbt container for interactive session
+
+```bash
+docker-compose up -d
+docker-compose exec dbt bash
+
+dbt --version
+dbt debug
 ```
 
 **5. Install dependencies**

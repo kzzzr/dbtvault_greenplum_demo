@@ -6,10 +6,18 @@ sources:
     schema: public
     tables:
       - name: lineitem
+        identifier: src_lineitem
       - name: customer
+        identifier: src_customer
       - name: orders
+        identifier: src_orders
       - name: partsupp
+        identifier: src_partsupp
       - name: supplier
+        identifier: src_supplier
       - name: part
+        identifier: src_part
       - name: nation
+        identifier: src_nation
       - name: region
+        identifier: src_region

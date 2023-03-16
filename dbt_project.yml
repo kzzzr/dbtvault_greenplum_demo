@@ -1,33 +1,18 @@
 name: dbtvault_greenplum_demo
 profile: dbtvault_greenplum_demo
 version: '5.1.0'
-require-dbt-version: ['>=0.18.0', '<0.20.0']
 config-version: 2
 
-analysis-paths:
-  - analysis
-clean-targets:
-  - target
-data-paths:
-  - data
-macro-paths:
-  - macros
-source-paths:
-  - models
-test-paths:
-  - tests
-target-path: target
-
 vars:
-  load_date: '1992-01-01'
-  tpch_size: 10 #1, 10, 100, 1000, 10000
+  load_date: '1992-01-03'
+  # tpch_size: 10 #1, 10, 100, 1000, 10000
 
 models:
   dbtvault_greenplum_demo:
     raw_stage:
       tags:
         - 'raw'
-      materialized: view
+      materialized: table
     stage:
       tags:
         - 'stage'
@@ -55,3 +40,17 @@ target-path: "target"
 clean-targets:
     - "target"
     - "dbt_modules"
+
+analysis-paths:
+  - analysis
+clean-targets:
+  - target
+data-paths:
+  - data
+macro-paths:
+  - macros
+source-paths:
+  - models
+test-paths:
+  - tests
+target-path: target    

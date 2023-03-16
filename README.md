@@ -1,243 +1,168 @@
-# 1. Create Greenplum cluster on Yandex.Cloud
+# Data Vault powered by dbtVault and Greenplum
 
-**[Data Warehouse Analyst – Analytics Engineer @ OTUS.ru](https://otus.ru/lessons/dwh/)**
+- Build Data Vault powered by [dbtVault](https://dbtvault.readthedocs.io/) and [Greenplum](https://greenplum.org/)
+- Deploy Infrastructure as Code with [Terraform](https://www.terraform.io/) and [Yandex.Cloud](https://cloud.yandex.com/en-ru/)
+- Instant development with [Github Codespaces](https://docs.github.com/en/codespaces)
+- Assignment checks with [Github Actions](https://github.com/features/actions)
 
-Request access to Manged Greenplum Service (beta), than create a cluster.
+## Assignment TODO
 
-Configuration I have used:
+⚠️ Attention! Always delete resources after you finish your work!
 
-![](https://habrastorage.org/webt/hu/tf/6s/hutf6sstdjvtxgujcmhchocjpws.png)
+- [ ] [Fork this repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo)
+- [ ] [Configure Developer Environment]()
+- [ ] [Deploy Infrastructure]()
+- [ ] [Check database connection]()
+- [ ] [Populate Data Vault day-by-day]()
+- [ ] [Build Business Vault on top of Data Vault]()
+- [ ] [Create PR and pass CI tests]()
+
+## 1. Configure Developer Environment
+
+1. You have got 3 options to set up:
+ 
+    <details><summary>Start with GitHub Codespaces / Dev Container:</summary>
+    <p>
+
+    Open in Github Codespace:
+
+    ![GitHub Codespaces](./docs/github_codespaces.png)
+
+    Or open in a local Dev Container (VS Code):
+
+    ![Dev Container](./docs/dev_container.png)
+
+    </p>
+    </details>
+
+    <details><summary>Set up Docker containers manually:</summary>
+    <p>
+
+    Install [Docker](https://docs.docker.com/desktop/#download-and-install) and run commands:
+
+    ```bash
+    # build & run container
+    docker-compose build
+    docker-compose up -d
+
+    # alias docker exec command
+    alias dbt="docker-compose exec dev dbt"
+    ```
+
+    </p>
+    </details>
+
+    <details><summary>Alternatively, install on a local machine:</summary>
+    <p>
+
+    1. [Install dbt](https://docs.getdbt.com/dbt-cli/install/overview)
+
+        [Configure profile](https://docs.getdbt.com/dbt-cli/configure-your-profile) manually by yourself. By default, dbt expects the `profiles.yml` file to be located in the `~/.dbt/` directory. Use this [template](./profiles.yml) and enter your own credentials.
+
+    1. Intsall [yc CLI](https://cloud.yandex.com/en-ru/docs/cli/operations/install-cli)
+
+    1. Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
+
+    </p>
+    </details>
+
+1. Populate `.env` file
+
+    `.env` is used to store secrets as environment variables.
+
+    Copy template file [.env.template](./.env.template) to `.env` file:
+    
+    ```bash
+    cp .env.template .env
+    ```
+
+    Open file in editor and set your own values.
+
+    > ❗️ Never commit secrets to git    
+
+## 2. Deploy Infrastructure
+
+1. Get familiar with Managed Service for Greenplum
+
+    ![](./docs/managed_greenplum_ui.png)
+
+1. Install and configure `yc` CLI: [Getting started with the command-line interface by Yandex Cloud](https://cloud.yandex.com/en/docs/cli/quickstart#install)
+
+    ```bash
+    yc init
+    ```
+
+1. Set environment variables:
+
+    ```bash
+    export YC_TOKEN=$(yc iam create-token)
+    export YC_CLOUD_ID=$(yc config get cloud-id)
+    export YC_FOLDER_ID=$(yc config get folder-id)
+    export $(xargs <.env)
+    ```
+
+1. Deploy using yc CLI
+
+Add network, greenplum, egress NAT (s3)
+
+    ```bash
+    yc managed-greenplum cluster create gp_datavault \
+    --network-name default \
+    --zone-id ru-central1-a \
+    --environment prestable \
+    --master-host-count 2 \
+    --segment-host-count 2 \
+    --master-config resource-id=s3-c2-m8,disk-size=30,disk-type=network-ssd \
+    --segment-config resource-id=s3-c2-m8,disk-size=30,disk-type=network-ssd \
+    --segment-in-host 1 \
+    --user-name greenplum \
+    --user-password $(TF_VAR_greenplum_password) \
+    --greenplum-version 6.22 \
+    --assign-public-ip
+    ```
+
+1. Deploy using Terraform
+
+    ```bash
+    terraform init
+    terraform validate
+    terraform fmt
+    terraform plan
+    terraform apply
+    ```
+
+    Store terraform output values as Environment Variables:
+
+    ```bash
+    export DBT_HOST=$(terraform output -raw greenplum_host_fqdn)
+    export DBT_USER='greenplum'
+    export DBT_PASSWORD=${TF_VAR_greenplum_password}
+    
+    export DBT_HOST='rc1b-j9injttb11tl6ohd.mdb.yandexcloud.net,rc1b-o0tu24372qtf0qko.mdb.yandexcloud.net'
+    export DBT_USER='greenplum'
+    export DBT_PASSWORD='greenplum'
+    ```
+
+    [EN] Reference: [Getting started with Terraform by Yandex Cloud](https://cloud.yandex.com/en/docs/tutorials/infrastructure-management/terraform-quickstart)
+    
+    [RU] Reference: [Начало работы с Terraform by Yandex Cloud](https://cloud.yandex.ru/docs/tutorials/infrastructure-management/terraform-quickstart)
 
 
-# 2. Generate data with DBGen
-
-Spin up a virtual machine, install libs, generate data.
-
-Or just get what I have prepared for you from `s3://otus-dwh/tpch-dbgen/` (Yandex Object Storage)
-
-```bash
-
-ssh -i ~/.ssh/key dbgen@{ip}  # ssh to VM
-
-sudo apt-get install -y gcc git awscli postgresql # install libs
-
-git clone https://github.com/electrum/tpch-dbgen.git # TPCH generator
-make makefile.suite
-
-./dbgen -v -h -s 10 # generate data
-
-for i in `ls *.tbl`; do sed 's/|$//' $i > ${i/tbl/csv}; echo $i; done; # convert to a CSV format compatible with PostgreSQL
-
-aws configure # to sync with S3
-
-aws --endpoint-url=https://storage.yandexcloud.net s3 sync . s3://otus-dwh/tpch-dbgen/ \
-	--exclude=* \
-	--include=*.csv \
-	--acl=public-read \
-	--dryrun
-
-```
-
-Read more at:
-- https://github.com/RunningJon/TPC-H
-- https://github.com/wangguoke/blog/blob/master/How%20to%20use%20the%20pg_tpch.md
+! To connect to external sources, set up an NAT gateway for the subnet hosting the Managed Service for Greenplum® cluster.
+https://cloud.yandex.com/en/docs/vpc/operations/create-nat-gateway
 
 
-# 3. COPY to database
+## Check database connection
 
-First create table definitions.
-
-Then load data into it.
+## WIP Populate Data Vault day-by-day
 
 
-```sql
--- DDL scripts to create table
-
-CREATE TABLE customer
-(C_CUSTKEY INT, 
-C_NAME VARCHAR(25),
-C_ADDRESS VARCHAR(40),
-C_NATIONKEY INTEGER,
-C_PHONE CHAR(15),
-C_ACCTBAL DECIMAL(15,2),
-C_MKTSEGMENT CHAR(10),
-C_COMMENT VARCHAR(117))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (C_CUSTKEY);
-
-CREATE TABLE lineitem
-(L_ORDERKEY BIGINT,
-L_PARTKEY INT,
-L_SUPPKEY INT,
-L_LINENUMBER INTEGER,
-L_QUANTITY DECIMAL(15,2),
-L_EXTENDEDPRICE DECIMAL(15,2),
-L_DISCOUNT DECIMAL(15,2),
-L_TAX DECIMAL(15,2),
-L_RETURNFLAG CHAR(1),
-L_LINESTATUS CHAR(1),
-L_SHIPDATE DATE,
-L_COMMITDATE DATE,
-L_RECEIPTDATE DATE,
-L_SHIPINSTRUCT CHAR(25),
-L_SHIPMODE CHAR(10),
-L_COMMENT VARCHAR(44))
-WITH (appendonly=true, orientation=column, compresstype=ZSTD)
-DISTRIBUTED BY (L_ORDERKEY,L_LINENUMBER)
-PARTITION BY RANGE (L_SHIPDATE)
-(start('1992-01-01') INCLUSIVE end ('1998-12-31') INCLUSIVE every (30),
-default partition others);
-
-CREATE TABLE nation
-(N_NATIONKEY INTEGER, 
-N_NAME CHAR(25), 
-N_REGIONKEY INTEGER, 
-N_COMMENT VARCHAR(152))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (N_NATIONKEY);
-
-CREATE TABLE orders
-(O_ORDERKEY BIGINT,
-O_CUSTKEY INT,
-O_ORDERSTATUS CHAR(1),
-O_TOTALPRICE DECIMAL(15,2),
-O_ORDERDATE DATE,
-O_ORDERPRIORITY CHAR(15), 
-O_CLERK  CHAR(15), 
-O_SHIPPRIORITY INTEGER,
-O_COMMENT VARCHAR(79))
-WITH (appendonly=true, orientation=column, compresstype=ZSTD)
-DISTRIBUTED BY (O_ORDERKEY)
-PARTITION BY RANGE (O_ORDERDATE)
-(start('1992-01-01') INCLUSIVE end ('1998-12-31') INCLUSIVE every (30),
-default partition others);
-
-CREATE TABLE part
-(P_PARTKEY INT,
-P_NAME VARCHAR(55),
-P_MFGR CHAR(25),
-P_BRAND CHAR(10),
-P_TYPE VARCHAR(25),
-P_SIZE INTEGER,
-P_CONTAINER CHAR(10),
-P_RETAILPRICE DECIMAL(15,2),
-P_COMMENT VARCHAR(23))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (P_PARTKEY);
-
-CREATE TABLE partsupp
-(PS_PARTKEY INT,
-PS_SUPPKEY INT,
-PS_AVAILQTY INTEGER,
-PS_SUPPLYCOST DECIMAL(15,2),
-PS_COMMENT VARCHAR(199))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (PS_PARTKEY,PS_SUPPKEY);
-
-CREATE TABLE region
-(R_REGIONKEY INTEGER, 
-R_NAME CHAR(25),
-R_COMMENT VARCHAR(152))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (R_REGIONKEY);
-
-CREATE TABLE supplier 
-(S_SUPPKEY INT,
-S_NAME CHAR(25),
-S_ADDRESS VARCHAR(40),
-S_NATIONKEY INTEGER,
-S_PHONE CHAR(15),
-S_ACCTBAL DECIMAL(15,2),
-S_COMMENT VARCHAR(101))
-WITH (appendonly=true, orientation=column)
-DISTRIBUTED BY (S_SUPPKEY);
-```
-
-On a VM with installed psql execute COPY pointing to local csv files:
-
-```bash
-export GREENPLUM_URI="postgres://greenplum:<pass>@<host>:5432/postgres"
-psql $GREENPLUM_URI
-
-\copy customer from  '/home/dbgen/tpch-dbgen/data/customer.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy lineitem from  '/home/dbgen/tpch-dbgen/data/lineitem.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy nation from  '/home/dbgen/tpch-dbgen/data/nation.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy orders from  '/home/dbgen/tpch-dbgen/data/orders.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy part from  '/home/dbgen/tpch-dbgen/data/part.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy partsupp from  '/home/dbgen/tpch-dbgen/data/partsupp.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy region from  '/home/dbgen/tpch-dbgen/data/region.csv' WITH (FORMAT csv, DELIMITER '|');
-\copy supplier from  '/home/dbgen/tpch-dbgen/data/supplier.csv' WITH (FORMAT csv, DELIMITER '|');
-```
-
-# 4. Run dbtVault + Greenplum demo 
-
-**1. First read the official guide:**
+1. First read the official guide:**
 
 [dbtVault worked example](https://dbtvault.readthedocs.io/en/latest/worked_example/we_worked_example/)
 
-**2. Clone repo with dbt project**
 
-Clone demo repo: https://github.com/kzzzr/dbtvault_greenplum_demo
-
-```bash
-git clone https://github.com/kzzzr/dbtvault_greenplum_demo.git
-```
-
-**3. Configure database connection**
-
-Example `profiles.yml`
-
-```yaml
-config:
-  send_anonymous_usage_stats: False
-  use_colors: True
-  partial_parse: True
-
-dbtvault_greenplum_demo:
-  outputs:
-    dev:
-      type: postgres
-      threads: 2
-      host: {yc-greenplum-host}
-      port: 5432
-      user: greenplum
-      pass: {yc-greenplum-pass}
-      dbname: postgres
-      schema: public
-  target: dev
-
-```
-
-**4. Make sure you run on `dbt==0.19.0`**
-
-Either use `pipenv` for Virtual Environment or Docker container
-
-### Python virtual enironment
-
-Sync dependencies of specific versions and open subshell:
-
-```bash
-pipenv sync
-pipenv shell
-
-dbt --version
-dbt debug
-```
-
-### Docker
-
-1. Launch containers with dbt and postgres
-2. Enter dbt container for interactive session
-
-```bash
-docker-compose up -d
-docker-compose exec dbt bash
-
-dbt --version
-dbt debug
-```
-
-**5. Install dependencies**
+1. Install dependencies
 
 Initial repo is intended to run on Snowflake only.
 
@@ -259,10 +184,9 @@ Install package:
 
 ```bash
 dbt deps
-
 ```
 
-**6. Adapt models to Greenplum/PostgreSQL**
+1. Adapt models to Greenplum/PostgreSQL
 
 Check out the [commit history](https://github.com/kzzzr/dbtvault_greenplum_demo/commits/master).
 
@@ -273,7 +197,7 @@ Check out the [commit history](https://github.com/kzzzr/dbtvault_greenplum_demo/
 * [eafed95](https://github.com/kzzzr/dbtvault_greenplum_demo/commit/eafed95ad5b912daf9339d877dfa0ee246bd089f) - configure dbt_project.yml for greenplum - Artemiy Kozyr
 
 
-**7. Run models step-by-step**
+1. Run models step-by-step
 
 Load one day to Data Vault structures:
 
@@ -286,7 +210,7 @@ dbt run -m tag:satellite
 dbt run -m tag:t_link
 ```
 
-**8. Load next day**
+1. Load next day
 
 Simulate next day load by incrementing `load_date` varible:
 
@@ -297,3 +221,7 @@ vars:
   load_date: '1992-01-08' # increment by one day '1992-01-09'
 
 ```
+
+## Build Business Vault on top of Data Vault
+
+## Create PR and pass CI tests

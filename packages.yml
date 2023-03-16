@@ -4,3 +4,4 @@ packages:
   - git: "https://github.com/kzzzr/dbtvault.git"
     revision: master
     warn-unpinned: false
+    

@@ -7,11 +7,19 @@ dbtvault_greenplum_demo:
   outputs:
     dev:
       type: postgres
-      threads: 2
-      host: __HOST__
-      port: 5432
-      user: __USERNAME__
-      pass: __PASSWORD__
       dbname: postgres
       schema: public
+      host: "{{ env_var('DBT_HOST') }}"
+      port: 5432
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      secure: True
+      verify: False
+      threads: 2
+    # ci:
+    #   type: clickhouse
+    #   host: clickhouse
+    #   port: 8123
+    #   schema: default
+    #   threads: 4
   target: dev

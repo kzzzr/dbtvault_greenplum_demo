@@ -6,7 +6,7 @@ config:
 dbtvault_greenplum_demo:
   outputs:
     dev:
-      type: postgres
+      type: greenplum
       dbname: postgres
       schema: public
       host: "{{ env_var('DBT_HOST') }}"

@@ -103,7 +103,9 @@
 
 1. Deploy using yc CLI
 
-Add network, greenplum, egress NAT (s3)
+    - default network
+    - egress NAT (to access s3)
+    - greenplum
 
     ```bash
     yc managed-greenplum cluster create gp_datavault \
@@ -116,9 +118,16 @@ Add network, greenplum, egress NAT (s3)
     --segment-config resource-id=s3-c2-m8,disk-size=30,disk-type=network-ssd \
     --segment-in-host 1 \
     --user-name greenplum \
-    --user-password $(TF_VAR_greenplum_password) \
+    --user-password $TF_VAR_greenplum_password \
     --greenplum-version 6.22 \
     --assign-public-ip
+
+    yc managed-greenplum hosts list master --cluster-name gp_datavault
+
+    export DBT_HOST='<host_address>'
+    export DBT_HOST=''
+    export DBT_USER='greenplum'
+    export DBT_PASSWORD=$TF_VAR_greenplum_password
     ```
 
 1. Deploy using Terraform
@@ -137,10 +146,6 @@ Add network, greenplum, egress NAT (s3)
     export DBT_HOST=$(terraform output -raw greenplum_host_fqdn)
     export DBT_USER='greenplum'
     export DBT_PASSWORD=${TF_VAR_greenplum_password}
-    
-    export DBT_HOST='rc1b-j9injttb11tl6ohd.mdb.yandexcloud.net,rc1b-o0tu24372qtf0qko.mdb.yandexcloud.net'
-    export DBT_USER='greenplum'
-    export DBT_PASSWORD='greenplum'
     ```
 
     [EN] Reference: [Getting started with Terraform by Yandex Cloud](https://cloud.yandex.com/en/docs/tutorials/infrastructure-management/terraform-quickstart)
@@ -154,10 +159,14 @@ https://cloud.yandex.com/en/docs/vpc/operations/create-nat-gateway
 
 ## Check database connection
 
-## WIP Populate Data Vault day-by-day
+```
+dbt debug
+```
+
+## Populate Data Vault day-by-day
 
 
-1. First read the official guide:**
+1. First read the official guide:
 
 [dbtVault worked example](https://dbtvault.readthedocs.io/en/latest/worked_example/we_worked_example/)
 

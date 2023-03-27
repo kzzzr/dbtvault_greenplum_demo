@@ -24,6 +24,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_customer', info=True)}}
 
         -- 1.2. supplier
         DROP EXTERNAL TABLE IF EXISTS src_supplier ;
@@ -42,6 +43,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_supplier', info=True)}}
 
         -- 1.3. part
         DROP EXTERNAL TABLE IF EXISTS src_part ;
@@ -62,6 +64,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_part', info=True)}}
 
         -- 1.4. lineorder
         DROP EXTERNAL TABLE IF EXISTS src_lineitem ;
@@ -89,6 +92,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_lineitem', info=True)}}
 
         -- 1.5. nation
         DROP EXTERNAL TABLE IF EXISTS src_nation ;
@@ -104,6 +108,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_nation', info=True)}}
 
         -- 1.6. orders
         DROP EXTERNAL TABLE IF EXISTS src_orders ;
@@ -124,6 +129,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_orders', info=True)}}
 
         -- 1.7. partsupp
         DROP EXTERNAL TABLE IF EXISTS src_partsupp ;
@@ -140,6 +146,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_partsupp', info=True)}}
 
         -- 1.8. region
         DROP EXTERNAL TABLE IF EXISTS src_region ;
@@ -154,6 +161,7 @@
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
+        {{ log('src_region', info=True)}}
 
     {% endset %}
     

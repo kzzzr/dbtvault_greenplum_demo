@@ -103,9 +103,9 @@
 
 1. Deploy using yc CLI
 
-    - default network
-    - egress NAT (to access s3)
-    - greenplum
+    - Egress NAT (required to access s3): https://cloud.yandex.com/en/docs/vpc/operations/create-nat-gateway
+    - S3 service account keys (required for external tables access): https://cloud.yandex.com/en/docs/iam/operations/sa/create-access-key
+    - Greenplum: https://cloud.yandex.com/en/docs/cli/cli-ref/managed-services/managed-greenplum/
 
     ```bash
     yc managed-greenplum cluster create gp_datavault \
@@ -122,12 +122,17 @@
     --greenplum-version 6.22 \
     --assign-public-ip
 
+    yc vpc gateway create --name gp-gateway
+    yc vpc route-table create --name=gp-route-table --network-name=default --route destination=0.0.0.0/0,gateway-id=<gateway_id>
+    yc vpc subnet update <subnet_name> --route-table-name=gp-route-table
+
     yc managed-greenplum hosts list master --cluster-name gp_datavault
 
-    export DBT_HOST='<host_address>'
-    export DBT_HOST=''
-    export DBT_USER='greenplum'
+    export DBT_HOST=$DBT_HOST
+    export DBT_USER=$DBT_USER
     export DBT_PASSWORD=$TF_VAR_greenplum_password
+    export S3_ACCESSKEY=$S3_ACCESSKEY
+    export S3_SECRETKEY=$S3_SECRETKEY
     ```
 
 1. Deploy using Terraform
@@ -165,6 +170,19 @@ dbt debug
 
 ## Populate Data Vault day-by-day
 
+- Initialize data sources (External tables)
+
+```bash
+dbt run-operation init_s3_sources
+```
+
+- Install packages:
+
+```bash
+dbt deps
+```
+
+
 
 1. First read the official guide:
 
@@ -189,11 +207,7 @@ packages:
     warn-unpinned: false
 ```
 
-Install package:
 
-```bash
-dbt deps
-```
 
 1. Adapt models to Greenplum/PostgreSQL
 

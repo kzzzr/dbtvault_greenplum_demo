@@ -8,7 +8,6 @@
 
         -- 1.1. customer
         DROP EXTERNAL TABLE IF EXISTS src_customer ;
-
         CREATE EXTERNAL TABLE src_customer(
                         C_CUSTKEY INT, 
                         C_NAME VARCHAR(25),
@@ -20,7 +19,7 @@
                         C_COMMENT VARCHAR(117),
                         EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/customer.tbl?PROFILE=s3:text&accesskey=&secretkey=&endpoint=storage.yandexcloud.net'    
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/customer.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -38,7 +37,7 @@
             S_COMMENT VARCHAR(101),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/supplier.tbl?PROFILE=s3:text&accesskey=&secretkey=&endpoint=storage.yandexcloud.net'    
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/supplier.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -58,14 +57,14 @@
             P_COMMENT VARCHAR(23),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/part.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net' 
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/part.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
 
         -- 1.4. lineorder
-        DROP EXTERNAL TABLE IF EXISTS src_lineitem CASCADE ;
+        DROP EXTERNAL TABLE IF EXISTS src_lineitem ;
         CREATE EXTERNAL TABLE src_lineitem(
             L_ORDERKEY BIGINT,
             L_PARTKEY INT,
@@ -85,7 +84,7 @@
             L_COMMENT VARCHAR(44),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/lineitem.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net'    
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/lineitem.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -100,7 +99,7 @@
             N_COMMENT VARCHAR(152),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/nation.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net' 
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/nation.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -120,7 +119,7 @@
             O_COMMENT VARCHAR(79),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/orders.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net' 
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/orders.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -136,7 +135,7 @@
             PS_COMMENT VARCHAR(199),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/partsupp.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net' 
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/partsupp.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
@@ -150,13 +149,11 @@
             R_COMMENT VARCHAR(152),
             EXTRA VARCHAR(1)
         )
-        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/region.tbl?PROFILE=s3:csv&accesskey=&secretkey=&endpoint=storage.yandexcloud.net' 
+        LOCATION ('pxf://otus-dwh/tpch-dbgen-1g/region.tbl?PROFILE=s3:text&accesskey={{ env_var("S3_ACCESSKEY") }}&secretkey={{ env_var("S3_SECRETKEY") }}&endpoint=storage.yandexcloud.net'
         )
         FORMAT 'TEXT' 
         (DELIMITER '|')
         ;
-
-        SELECT * FROM src_region LIMIT 200 ;
 
     {% endset %}
     

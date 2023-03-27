@@ -1,6 +1,6 @@
 name: dbtvault_greenplum_demo
 profile: dbtvault_greenplum_demo
-version: '5.1.0'
+version: '1.0.0'
 config-version: 2
 
 vars:
@@ -35,18 +35,6 @@ models:
         tags:
           - 't_link'
 
-# path to compiled .sql files
-target-path: "target"
-clean-targets:
-    - "target"
-    - "dbt_modules"
-
-analysis-paths:
-  - analysis
-clean-targets:
-  - target
-data-paths:
-  - data
 macro-paths:
   - macros
 source-paths:
@@ -54,3 +42,8 @@ source-paths:
 test-paths:
   - tests
 target-path: target    
+
+clean-targets:
+    - "target"
+    - "dbt_modules"
+

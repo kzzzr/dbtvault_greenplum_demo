@@ -98,11 +98,40 @@
     export YC_TOKEN=$(yc iam create-token)
     export YC_CLOUD_ID=$(yc config get cloud-id)
     export YC_FOLDER_ID=$(yc config get folder-id)
+    export TF_VAR_folder_id=$(yc config get folder-id)
     export $(xargs <.env)
     ```
 
-1. Deploy using yc CLI
+1. Deploy using Terraform
 
+    ```bash
+    terraform init
+    terraform validate
+    terraform fmt
+    terraform plan
+    terraform apply
+    ```
+
+    Store terraform output values as Environment Variables:
+
+    ```bash
+    export DBT_HOST=$(terraform output -raw greenplum_host_fqdn)
+    export DBT_USER='greenplum'
+    export DBT_PASSWORD=${TF_VAR_greenplum_password}
+    export S3_ACCESSKEY=$(terraform output -raw access_key)
+    export S3_SECRETKEY=$(terraform output -raw secret_key)
+    ```
+
+    [EN] Reference: [Getting started with Terraform by Yandex Cloud](https://cloud.yandex.com/en/docs/tutorials/infrastructure-management/terraform-quickstart)
+    
+    [RU] Reference: [Начало работы с Terraform by Yandex Cloud](https://cloud.yandex.ru/docs/tutorials/infrastructure-management/terraform-quickstart)
+
+1. Alternatively, deploy using yc CLI
+
+    <details><summary>Deploy using yc CLI:</summary>
+    <p>
+
+    Checklist:
     - Egress NAT (required to access s3): https://cloud.yandex.com/en/docs/vpc/operations/create-nat-gateway
     - S3 service account keys (required for external tables access): https://cloud.yandex.com/en/docs/iam/operations/sa/create-access-key
     - Greenplum: https://cloud.yandex.com/en/docs/cli/cli-ref/managed-services/managed-greenplum/
@@ -135,33 +164,6 @@
     export S3_SECRETKEY=$S3_SECRETKEY
     ```
 
-1. Deploy using Terraform
-
-    ```bash
-    terraform init
-    terraform validate
-    terraform fmt
-    terraform plan
-    terraform apply
-    ```
-
-    Store terraform output values as Environment Variables:
-
-    ```bash
-    export DBT_HOST=$(terraform output -raw greenplum_host_fqdn)
-    export DBT_USER='greenplum'
-    export DBT_PASSWORD=${TF_VAR_greenplum_password}
-    ```
-
-    [EN] Reference: [Getting started with Terraform by Yandex Cloud](https://cloud.yandex.com/en/docs/tutorials/infrastructure-management/terraform-quickstart)
-    
-    [RU] Reference: [Начало работы с Terraform by Yandex Cloud](https://cloud.yandex.ru/docs/tutorials/infrastructure-management/terraform-quickstart)
-
-
-! To connect to external sources, set up an NAT gateway for the subnet hosting the Managed Service for Greenplum® cluster.
-https://cloud.yandex.com/en/docs/vpc/operations/create-nat-gateway
-
-
 ## Check database connection
 
 ```
@@ -182,14 +184,6 @@ dbt run-operation init_s3_sources
 dbt deps
 ```
 
-
-
-1. First read the official guide:
-
-[dbtVault worked example](https://dbtvault.readthedocs.io/en/latest/worked_example/we_worked_example/)
-
-
-1. Install dependencies
 
 Initial repo is intended to run on Snowflake only.
 

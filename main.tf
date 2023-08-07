@@ -18,7 +18,7 @@ resource "yandex_mdb_greenplum_cluster" "greenplum_cluster" {
   zone               = yandex_vpc_subnet.default_subnet.zone
   subnet_id          = yandex_vpc_subnet.default_subnet.id
   assign_public_ip   = true
-  version            = "6.19"
+  version            = "6.22"
   master_host_count  = 2
   segment_host_count = 2
   segment_in_host    = 1

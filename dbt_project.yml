@@ -18,8 +18,7 @@ models:
       enabled: true
 
     raw_vault:
-      tags:
-        - 'raw_vault'
+      tags: ['raw_vault']
       materialized: incremental
       hubs:
         tags:
@@ -44,5 +43,5 @@ target-path: target
 
 clean-targets:
     - "target"
-    - "dbt_modules"
+    - "dbt_packages"
 

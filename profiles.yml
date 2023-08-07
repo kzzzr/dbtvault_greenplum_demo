@@ -15,7 +15,7 @@ dbtvault_greenplum_demo:
       password: "{{ env_var('DBT_PASSWORD') }}"
       secure: True
       verify: False
-      threads: 2
+      threads: 3
     # ci:
     #   type: clickhouse
     #   host: clickhouse

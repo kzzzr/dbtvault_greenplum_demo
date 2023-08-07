@@ -99,7 +99,7 @@ hashed_columns:
 {% set hashed_columns = metadata_dict['hashed_columns'] %}
 
 WITH staging AS (
-{{ dbtvault.stage(include_source_columns=true,
+{{ automate_dv.stage(include_source_columns=true,
                   source_model=source_model,
                   derived_columns=derived_columns,
                   hashed_columns=hashed_columns,
@@ -107,5 +107,5 @@ WITH staging AS (
 )
 
 SELECT *,
-       TO_DATE('{{ var('load_date') }}') AS LOAD_DATE
+       ('{{ var('load_date') }}')::DATE AS LOAD_DATE
 FROM staging

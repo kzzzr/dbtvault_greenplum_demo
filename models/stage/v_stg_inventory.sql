@@ -73,7 +73,7 @@ hashed_columns:
 
 
 WITH staging AS (
-{{ dbtvault.stage(include_source_columns=true,
+{{ automate_dv.stage(include_source_columns=true,
                   source_model=source_model,
                   derived_columns=derived_columns,
                   hashed_columns=hashed_columns,

@@ -245,13 +245,9 @@ dbt build
 
 
 dbt run -s as_of_date
-
-
 dbt run -s pit_customer
-
-
 dbt run -s bridge_customer_order
-
+dbt run -s bridge_supplier_inventory
 
 ## Create and submit PR
 

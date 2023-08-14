@@ -1,4 +1,4 @@
-{{ config(materialized='pit_incremental') }}
+{{ config(materialized='table') }}
 
 {%- set yaml_metadata -%}
 source_model: hub_customer

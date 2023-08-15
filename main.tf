@@ -100,7 +100,7 @@ resource "yandex_vpc_route_table" "rt" {
 // Create SA
 resource "yandex_iam_service_account" "sa" {
   folder_id = var.folder_id
-  name      = "sa"
+  name      = "nursultan"
 }
 
 // Grant permissions

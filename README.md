@@ -240,6 +240,18 @@ dbt build
 ## Build Business Vault on top of Data Vault
 
 1. [Point In Time (PIT) table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_point_in_time/)
-1. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
+2. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
+
+
+dbt run -s as_of_date - Creating as_of_date 
+
+
+dbt run -s pit_customer - Creating PIT
+
+
+dbt run -s bridge_customer_nation - Creating bridge table with nations
+
+
 
 ## Create and submit PR
+

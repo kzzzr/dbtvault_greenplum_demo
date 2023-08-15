@@ -242,16 +242,124 @@ dbt build
 1. [Point In Time (PIT) table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_point_in_time/)
 2. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
 
-
+```bash
 dbt run -s as_of_date - Creating as_of_date 
 
-
-dbt run -s pit_customer - Creating PIT
-
+dbt run -s pitne_customer - Creating PIT
 
 dbt run -s bridge_customer_nation - Creating bridge table with nations
+```
+
+## Answers to the questions:
+1. Load 4-5 days to Data Vault and play with view/table
+```bash
+When I use materialized table for raw_stage in dbt_project.yml, it takes 87.44 seconds to complete 'dbt build'.
+With materialized - view for raw_stage in dbt_project.yml, it takes 18 minutes and 19.12 seconds to complete 'dbt build'.
+```
+
+2. Prepare Point-in-Time & Bridge Tables
+```bash
+I've done it: commands with 'dbt run' are listed above the section with answers.
+```
+
+3. Now run a couple of queries on top of models you have built
+
+The query on top of PIT:
 
 
+```bash
+select
+    customer_pk,
+    COUNT(distinct sat_order_customer_details_ldts) AS "ORDER_CUSTOMER_DETAILS_LDTS"
+FROM
+    pitne_customer
+WHERE
+    as_of_date <= date '1992-01-03' and as_of_date >= '1992-01-02'
+group by 
+    customer_pk
+limit 
+    10;
+
+customer_pk     |ORDER_CUSTOMER_DETAILS_LDTS|
+----------------+---------------------------+
+â¯ [ÊTÆ:ÚÆþ  Þ!Ë|                          1|
+Q©|HÞ 4Zíï #û}/ |                          2|
+jg­IF Y@q\ W¥ +y|                          1|
+ÂK àý ýµQ±. D g¼|                          1|
+ïxil×  bÝ5+fò Ï |                          1|
+àJ ]Ïò8Ú biÇöØþü|                          1|
+ê. §åÃw(<ú ³ ä$7|                          1|
+ å _×­6¡Io0Ë äÁ5|                          1|
+t æ  ìvxm©ñ'ÏÛßo|                          1|
+ ^»ìN[ÈØ÷  Ûø &z|                          1|
+
+10 row(s) fetched  - 42 ms.
+```
+
+
+The query on top of Bridge Table:
+
+```bash
+select * 
+from bridge_customer_nation bcn 
+join public.link_customer_nation lcn
+on bcn.customer_pk =lcn.customer_pk
+where load_date < date '1992-01-02'
+limit 7;  
+
+customer_pk     |customer_nation_name     |link_customer_nation_pk|customer_pk     |nation_pk       |load_date |record_source|
+----------------+-------------------------+-----------------------+----------------+----------------+----------+-------------+
+x; b ïò  ÒiÖÅÕ6Ð|MOROCCO                  |ÉYgÀÔ&Þ b_Øu¸µ         |x; b ïò  ÒiÖÅÕ6Ð| ó  ðb j ÓÈ½  /ó|1992-01-01|TPCH-ORDERS  |
+ã =6ûS è ýI    q|JORDAN                   |^Þ  ²ö£¢óâ; 2æ b       |ã =6ûS è ýI    q|Å ä Á$¡  µä¹ Â¯9|1992-01-01|TPCH-ORDERS  |
+Yr4 u§É IÏ¨E [~å|IRAN                     |ÂM°ýàÝö \°¯XÌI½ñ       |Yr4 u§É IÏ¨E [~å|ÓÙDh ¤BYu]8æÑcè |1992-01-01|TPCH-ORDERS  |
+ 6PÝ `Xy ³×qÏ  q|GERMANY                  | ¾ px­Ó > C>ÈBïá       | 6PÝ `Xy ³×qÏ  q|  ä_Îê zZ6ÞÝKê%C|1992-01-01|TPCH-ORDERS  |
+« G$ [kãA u ìX?o|CHINA                    |   bh¢  às#Ç6H®ä       |« G$ [kãA u ìX?o|oI"ôUh   ßJÒ) m#|1992-01-01|TPCH-ORDERS  |
+w½i $<¼¢  Ó¼u¥²Ë|RUSSIA                   |)­  _ç «O° ÞrÃÆ        |w½i $<¼¢  Ó¼u¥²Ë|¶×gÒøí]!¤K X h ¹|1992-01-01|TPCH-ORDERS  |
+Q¥ ¥  5Ð ÌO."Å f|INDONESIA                |f¡ó S¶k¥ §Áé  eQ       |Q¥ ¥  5Ð ÌO."Å f|EÄ Î.- ½ê üQÇÆ­&|1992-01-01|TPCH-ORDERS  |
+
+
+7 row(s) fetched  - 26 ms.
+```
+
+4. Compare disk space
+
+```bash
+
+Линк
+
+SELECT pg_size_pretty(pg_relation_size('public.link_customer_nation'));
+pg_size_pretty|
+--------------+
+134 kB        |
+```
+
+```bash
+
+PIT
+
+SELECT pg_size_pretty(pg_relation_size('public.pitne_customer'));
+pg_size_pretty|
+--------------+
+355 kB        |
+```
+
+```bash
+
+Bridge Table
+
+SELECT pg_size_pretty(pg_relation_size('public.bridge_customer_nation'));
+pg_size_pretty|
+--------------+
+66 kB         |
+```
+
+
+5. Play with Clickhouse
+```bash
+Is it possible to run Data Vault on Clickhouse? Will it be able to handle incremental materialization for raw vault?
+
+We are already using raw_vault with incremental materialization (dbt_project.yml file), so I guess the answer is 'yes'
+```
 
 ## Create and submit PR
 

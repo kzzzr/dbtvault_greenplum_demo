@@ -32,6 +32,14 @@ models:
       t_links:
         tags:
           - 't_link'
+      pit:
+        tags:
+          - 'pit'
+      bridge:
+        tags:
+          - 'bridge'
+seeds:
+  name: as_of_date
 
 macro-paths:
   - macros
@@ -40,6 +48,8 @@ model-paths:
 test-paths:
   - tests
 target-path: target    
+seeds-paths:
+  - models
 
 clean-targets:
     - "target"

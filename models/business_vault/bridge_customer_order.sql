@@ -8,7 +8,6 @@ as_of_dates_table: as_of_dates_table
 bridge_walk:
   CUSTOMER_ORDER:
     bridge_link_pk: BRIDGE_PK
-    <--bridge_end_date: EFF_SAT_CUSTOMER_ORDER_ENDDATE
     bridge_load_date: BRIDGE_LOAD_DATE
     link_table: LINK_INVENTORY
     link_pk: INVENTORY_PK

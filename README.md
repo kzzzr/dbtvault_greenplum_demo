@@ -242,4 +242,9 @@ dbt build
 1. [Point In Time (PIT) table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_point_in_time/)
 1. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
 
+dbt run -s as_of_date
+dbt run -s pit_customer
+dbt run -s bridge_customer_order
+dbt run -s bridge_supplier_inventory
+
 ## Create and submit PR

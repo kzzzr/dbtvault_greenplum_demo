@@ -4,12 +4,14 @@ derived_columns:
   RECORD_SOURCE: '!RAW_TRANSACTIONS'
   LOAD_DATE: (TRANSACTION_DATE + 1 * INTERVAL '1 day')
   EFFECTIVE_FROM: 'TRANSACTION_DATE'
+  START_DATE: 'TRANSACTION_DATE'
+  END_DATE: "TO_DATE('9999/12/31', 'yyyy/mm/dd')"
 hashed_columns:
-  TRANSACTION_PK:
+  TRANSACTION_HK:
     - 'CUSTOMER_ID'
     - 'TRANSACTION_NUMBER'
-  CUSTOMER_PK: 'CUSTOMER_ID'
-  ORDER_PK: 'ORDER_ID'
+  CUSTOMER_HK: 'CUSTOMER_ID'
+  ORDER_HK: 'ORDER_ID'
 {%- endset -%}
 
 {% set metadata_dict = fromyaml(yaml_metadata) %}

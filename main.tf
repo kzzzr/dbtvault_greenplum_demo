@@ -30,16 +30,16 @@ resource "yandex_mdb_greenplum_cluster" "greenplum_cluster" {
 
   master_subcluster {
     resources {
-      resource_preset_id = "s3-c2-m8"
-      disk_size          = 20
-      disk_type_id       = "network-ssd"
+      resource_preset_id = "s3-c8-m32"
+      disk_size          = 93
+      disk_type_id       = "network-ssd-nonreplicated"
     }
   }
   segment_subcluster {
     resources {
-      resource_preset_id = "s3-c2-m8"
-      disk_size          = 30
-      disk_type_id       = "network-ssd"
+      resource_preset_id = "s3-c8-m32"
+      disk_size          = 93
+      disk_type_id       = "network-ssd-nonreplicated"
     }
   }
 

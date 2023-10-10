@@ -3,7 +3,7 @@
 {%- set yaml_metadata -%}
 source_model: hub_customer
 src_pk: CUSTOMER_PK
-src_ldts: LOAD_DATETIME
+src_ldts: LOAD_DATE
 as_of_dates_table: as_of_date
 bridge_walk:
   ORDER_CUSTOMER:

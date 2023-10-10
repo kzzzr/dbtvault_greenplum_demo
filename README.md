@@ -243,3 +243,4 @@ dbt build
 1. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
 
 ## Create and submit PR
+![Code_7yg7J47rPz](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/c931bf5c-2379-4bac-907f-e6a6854614c1)

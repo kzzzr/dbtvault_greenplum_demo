@@ -243,4 +243,16 @@ dbt build
 1. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
 
 ## Create and submit PR
+Changed Docker file:
+```
+ARG DBT_VERSION=1.5.4
+#FROM fishtownanalytics/dbt:${DBT_VERSION}
+FROM ghcr.io/dbt-labs/dbt-core:${DBT_VERSION}
+```
+Started Greenplum cluster:
+![gp](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/84f1374f-0ca3-493d-a81f-2cb7d25b86ff)
+Connected to GP cluster in YC via DBeaver:
+![GP_DB](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/1f1450ba-2266-4981-a779-ab9720969b6c)
+
+Created effective satelites models, one bridge and one pit models:
 ![Code_7yg7J47rPz](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/c931bf5c-2379-4bac-907f-e6a6854614c1)

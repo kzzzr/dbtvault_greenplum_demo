@@ -249,7 +249,9 @@ ARG DBT_VERSION=1.5.4
 #FROM fishtownanalytics/dbt:${DBT_VERSION}
 FROM ghcr.io/dbt-labs/dbt-core:${DBT_VERSION}
 ```
-Started Greenplum cluster:
+Started Greenplum cluster (Had troubles to choose right GP preset)
+![gp_3](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/f6c8b7d1-a2bd-4bc5-a178-4b77bf6d5b24)
+
 ![gp](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/84f1374f-0ca3-493d-a81f-2cb7d25b86ff)
 Connected to GP cluster in YC via DBeaver:
 ![GP_DB](https://github.com/DenGodunov/dbtvault_greenplum_demo/assets/7568117/1f1450ba-2266-4981-a779-ab9720969b6c)

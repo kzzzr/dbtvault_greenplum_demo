@@ -4,7 +4,7 @@ version: '1.0.0'
 config-version: 2
 
 vars:
-  load_date: '1992-01-01'
+  load_date: '1992-01-05'
   # tpch_size: 10 #1, 10, 100, 1000, 10000
 
 models:

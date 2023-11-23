@@ -243,3 +243,18 @@ dbt build
 1. [Bridge Table](https://automate-dv.readthedocs.io/en/latest/tutorial/tut_bridges/)
 
 ## Create and submit PR
+
+## HW assignment
+
+- Change greenplum cluster version (given version doesn't exist)
+- Create as_of_date and PiTs by given instructions
+- Create bridge
+
+Commands to run:
+
+```bash
+dbt run -s as_of_date
+dbt run -s pit_customer
+dbt run -s pit_supplier
+dbt run -s bridge_supplier
+```

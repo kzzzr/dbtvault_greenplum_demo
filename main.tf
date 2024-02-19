@@ -18,7 +18,7 @@ resource "yandex_mdb_greenplum_cluster" "greenplum_cluster" {
   zone               = yandex_vpc_subnet.default_subnet.zone
   subnet_id          = yandex_vpc_subnet.default_subnet.id
   assign_public_ip   = true
-  version            = "6.22"
+  version            = "6.25"
   master_host_count  = 2
   segment_host_count = 2
   segment_in_host    = 1
@@ -30,16 +30,16 @@ resource "yandex_mdb_greenplum_cluster" "greenplum_cluster" {
 
   master_subcluster {
     resources {
-      resource_preset_id = "s3-c2-m8"
-      disk_size          = 20
-      disk_type_id       = "network-ssd"
+      resource_preset_id = "s3-c8-m32"
+      disk_size          = 93
+      disk_type_id       = "network-ssd-nonreplicated"
     }
   }
   segment_subcluster {
     resources {
-      resource_preset_id = "s3-c2-m8"
-      disk_size          = 30
-      disk_type_id       = "network-ssd"
+      resource_preset_id = "s3-c8-m32"
+      disk_size          = 93
+      disk_type_id       = "network-ssd-nonreplicated"
     }
   }
 
